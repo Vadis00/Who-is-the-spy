@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Хто шпіон?</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #111827;
+      --card: rgba(255,255,255,0.08);
+      --card-strong: rgba(255,255,255,0.12);
+      --border: rgba(255,255,255,0.14);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --muted-2: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --danger: #fb7185;
+      --warning: #f59e0b;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --container: 420px;
+      --tap: 54px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(56,189,248,0.2), transparent 28%),
+        radial-gradient(circle at bottom, rgba(34,197,94,0.16), transparent 28%),
+        linear-gradient(180deg, #0b1120 0%, #111827 100%);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: max(16px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom));
+    }
+
+    .app {
+      width: 100%;
+      max-width: var(--container);
+      min-height: calc(100vh - 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeUp 220ms ease;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .screen.is-active {
+      display: flex;
+    }
+
+    .hero,
+    .card,
+    .word-card,
+    .player-card,
+    .vote-card,
+    .result-card,
+    .library-card {
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      border-radius: 30px;
+      padding: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: linear-gradient(180deg, rgba(17,24,39,0.92), rgba(15,23,42,0.88));
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(56,189,248,0.14);
+      color: #bae6fd;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 10px;
+    }
+
+    .hero__title {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.05;
+      font-weight: 800;
+    }
+
+    .hero__text {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .card {
+      border-radius: var(--radius-xl);
+      padding: 18px;
+    }
+
+    .card__title {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .card__subtitle {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .row--between {
+      justify-content: space-between;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field__label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .input {
+      width: 100%;
+      min-height: var(--tap);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 16px;
+      padding: 0 16px;
+      outline: none;
+      transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+    }
+
+    .input:focus {
+      border-color: rgba(56,189,248,0.6);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .button {
+      appearance: none;
+      border: 0;
+      min-height: var(--tap);
+      border-radius: 18px;
+      padding: 0 16px;
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 140ms ease, opacity 140ms ease, filter 140ms ease;
+      width: 100%;
+    }
+
+    .button:active { transform: scale(0.985); }
+    .button[disabled] { opacity: 0.48; cursor: not-allowed; }
+
+    .button--primary {
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+    }
+
+    .button--secondary {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .button--success {
+      background: linear-gradient(135deg, #10b981, #16a34a);
+    }
+
+    .button--danger {
+      background: linear-gradient(135deg, #f43f5e, #ef4444);
+    }
+
+    .button--warning {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+    }
+
+    .button--ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .player-list,
+    .word-list,
+    .vote-list,
+    .result-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .player-card,
+    .vote-card,
+    .result-card,
+    .library-card,
+    .word-card {
+      border-radius: 22px;
+      padding: 14px;
+    }
+
+    .player-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-card__name {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .player-card__meta,
+    .vote-card__meta,
+    .result-card__meta,
+    .word-card__hint,
+    .word-card__url,
+    .library-card__meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .icon-button {
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      border: 1px solid rgba(251,113,133,0.24);
+      background: rgba(251,113,133,0.12);
+      color: #fecdd3;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .progress {
+      display: flex;
+      gap: 8px;
+    }
+
+    .progress__item {
+      height: 8px;
+      border-radius: 999px;
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress__item.is-active::after,
+    .progress__item.is-done::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+    }
+
+    .word-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 300px;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .word-card__eyebrow {
+      color: #bae6fd;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .word-card__title {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.1;
+      font-weight: 900;
+      word-break: break-word;
+    }
+
+    .word-card__hint {
+      font-size: 15px;
+    }
+
+    .word-card__spy {
+      color: #fecdd3;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .word-card__image-wrap {
+      width: 100%;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      min-height: 150px;
+    }
+
+    .word-card__image {
+      display: block;
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .word-card__url {
+      word-break: break-all;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .muted-box {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .players-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .knowledge-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .knowledge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .knowledge-count {
+      color: #86efac;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .word-list {
+      max-height: 430px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .word-card {
+      text-align: left;
+      min-height: 0;
+      justify-content: flex-start;
+    }
+
+    .word-card__row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .word-card__name {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .toggle {
+      position: relative;
+      width: 56px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: background 140ms ease;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 140ms ease;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+
+    .toggle.is-on {
+      background: linear-gradient(135deg, #22c55e, #14b8a6);
+    }
+
+    .toggle.is-on::after {
+      transform: translateX(24px);
+    }
+
+    .screen-footer {
+      position: sticky;
+      bottom: 0;
+      padding-top: 4px;
+      background: linear-gradient(180deg, rgba(15,23,42,0), rgba(15,23,42,0.92) 24%);
+    }
+
+    .vote-card,
+    .result-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vote-card__button,
+    .result-card__pill {
+      flex: 0 0 auto;
+      min-width: 90px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .vote-card.is-selected {
+      border-color: rgba(56,189,248,0.36);
+      background: rgba(56,189,248,0.12);
+    }
+
+    .result-card__pill.is-spy {
+      background: rgba(244,63,94,0.14);
+      color: #fecdd3;
+      border-color: rgba(244,63,94,0.18);
+    }
+
+    .result-card__pill.is-safe {
+      background: rgba(34,197,94,0.12);
+      color: #bbf7d0;
+      border-color: rgba(34,197,94,0.2);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .stat__label {
+      color: var(--muted-2);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .stat__value {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .hidden { display: none !important; }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (min-width: 700px) {
+      body {
+        padding-top: 24px;
+      }
+
+      .app {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="hero__badge">🎭 Мобільна гра для компанії</div>
+      <h1 class="hero__title">Хто шпіон?</h1>
+      <p class="hero__text" id="heroText">
+        Додайте гравців, відмітьте знайомих персонажів і запускайте раунд. Один гравець побачить «Ти шпіон», усі інші — однакове слово.
+      </p>
+    </section>
+
+    <section class="screen is-active" id="screenSetup">
+      <div class="card stack">
+        <h2 class="card__title">Гравці</h2>
+        <p class="card__subtitle">
+          Мінімум 3 учасники. Додавайте імена по одному.
+        </p>
+
+        <div class="field">
+          <label class="field__label" for="playerName">Ім'я гравця</label>
+          <div class="row">
+            <input id="playerName" class="input" type="text" maxlength="24" placeholder="Наприклад: Анна" />
+            <button class="button button--primary" id="addPlayerButton" style="max-width: 120px;">Додати</button>
+          </div>
+        </div>
+
+        <div class="chips">
+          <span class="chip" id="playersCountChip">Гравців: 0</span>
+          <span class="chip" id="roundCountChip">Раундів: 0</span>
+        </div>
+
+        <div class="player-list" id="playersList"></div>
+
+        <div class="button-group">
+          <button class="button button--secondary" id="fillDemoButton">Заповнити демо</button>
+          <button class="button button--success" id="goToKnowledgeButton">Далі: знайомі персонажі</button>
+        </div>
+      </div>
+
+      <div class="card stack">
+        <h2 class="card__title">Як це працює</h2>
+        <div class="muted-box">
+          Спочатку всі позначають персонажів, яких знають. Під час старту гри система випадково вибирає лише того персонажа, якого знають усі гравці. Це робить раунд чеснішим і цікавішим.
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenKnowledge"></section>
+
+    <section class="screen" id="screenReveal">
+      <div class="card stack">
+        <div class="row row--between">
+          <div>
+            <h2 class="card__title">Перегляд ролей</h2>
+            <p class="card__subtitle" id="revealSubtitle"></p>
+          </div>
+          <button class="button button--ghost" id="cancelRoundButton" style="max-width: 110px;">Скасувати</button>
+        </div>
+
+        <div class="progress" id="revealProgress"></div>
+
+        <div class="word-card" id="revealCard"></div>
+
+        <div class="button-group">
+          <button class="button button--primary" id="showRoleButton">Показати</button>
+          <button class="button button--secondary hidden" id="hideRoleButton">Сховати</button>
+          <button class="button button--success hidden" id="nextPlayerButton">Передати далі</button>
+          <button class="button button--warning hidden" id="goToVotingButton">До голосування</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenVoting">
+      <div class="card stack">
+        <h2 class="card__title">Голосування</h2>
+        <p class="card__subtitle">
+          Оберіть, кого підозрюєте. Після цього можна показати результат.
+        </p>
+
+        <div class="chips">
+          <span class="chip" id="votingWordChip">Слово вибране</span>
+          <span class="chip" id="votingHintChip">Підказка готова</span>
+        </div>
+
+        <div class="vote-list" id="voteList"></div>
+
+        <div class="button-group">
+          <button class="button button--primary" id="showResultButton">Показати результат</button>
+          <button class="button button--secondary" id="backToRevealButton">Назад</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenResults">
+      <div class="card stack">
+        <h2 class="card__title">Результат раунду</h2>
+        <p class="card__subtitle" id="resultSummary"></p>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat__label">Загадане слово</div>
+            <div class="stat__value" id="resultWord"></div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">Підказка</div>
+            <div class="stat__value" id="resultHint" style="font-size: 18px;"></div>
+          </div>
+        </div>
+
+        <div class="result-list" id="resultList"></div>
+
+        <div class="button-group">
+          <button class="button button--success" id="newRoundButton">Новий раунд</button>
+          <button class="button button--secondary" id="toKnowledgeButtonFromResults">Змінити знання гравців</button>
+          <button class="button button--ghost" id="backToSetupButton">До старту</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const WORD_LIBRARY = [
+      {
+        id: 1,
+        text: 'Шрек',
+        hint: 'зелений огр, болото',
+        imageUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%A8%D1%80%D0%B5%D0%BA'
+      },
+      {
+        id: 2,
+        text: 'Гаррі Поттер',
+        hint: 'магія, окуляри, шрам',
+        imageUrl: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=900&q=80',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%93%D0%B0%D1%80%D1%80%D1%96_%D0%9F%D0%BE%D1%82%D1%82%D0%B5%D1%80'
+      },
+      {
+        id: 3,
+        text: 'Леонардо Ді Капріо',
+        hint: 'актор, Оскар, Титанік',
+        imageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%9B%D0%B5%D0%BE%D0%BD%D0%B0%D1%80%D0%B4%D0%BE_%D0%94%D1%96_%D0%9A%D0%B0%D0%BF%D1%80%D1%96%D0%BE'
+      },
+      {
+        id: 4,
+        text: 'Губка Боб',
+        hint: 'ананас, бікіні боттом',
+        imageUrl: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%93%D1%83%D0%B1%D0%BA%D0%B0_%D0%91%D0%BE%D0%B1_%D0%9A%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82%D0%BD%D1%96_%D0%A8%D1%82%D0%B0%D0%BD%D0%B8'
+      },
+      {
+        id: 5,
+        text: 'Людина-павук',
+        hint: 'павутина, герой, Нью-Йорк',
+        imageUrl: 'https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=900&q=80',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%9B%D1%8E%D0%B4%D0%B8%D0%BD%D0%B0-%D0%BF%D0%B0%D0%B2%D1%83%D0%BA'
+      },
+      {
+        id: 6,
+        text: 'Том і Джеррі',
+        hint: 'кіт і миша',
+        imageUrl: '',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%A2%D0%BE%D0%BC_%D1%96_%D0%94%D0%B6%D0%B5%D1%80%D1%80%D1%96'
+      },
+      {
+        id: 7,
+        text: 'Ілон Маск',
+        hint: 'Tesla, ракети, X',
+        imageUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%86%D0%BB%D0%BE%D0%BD_%D0%9C%D0%B0%D1%81%D0%BA'
+      },
+      {
+        id: 8,
+        text: 'Міккі Маус',
+        hint: 'мишеня, Disney, рукавички',
+        imageUrl: '',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%9C%D1%96%D0%BA%D0%BA%D1%96_%D0%9C%D0%B0%D1%83%D1%81'
+      },
+      {
+        id: 9,
+        text: 'Бетмен',
+        hint: 'кажан, Ґотем, маска',
+        imageUrl: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=900&q=80',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%91%D0%B5%D1%82%D0%BC%D0%B5%D0%BD'
+      },
+      {
+        id: 10,
+        text: 'Сімпсони',
+        hint: 'жовта сім’я, мультсеріал',
+        imageUrl: '',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%A1%D1%96%D0%BC%D0%BF%D1%81%D0%BE%D0%BD%D0%B8'
+      },
+      {
+        id: 11,
+        text: 'Дарт Вейдер',
+        hint: 'шолом, темна сторона',
+        imageUrl: '',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%94%D0%B0%D1%80%D1%82_%D0%92%D0%B5%D0%B9%D0%B4%D0%B5%D1%80'
+      },
+      {
+        id: 12,
+        text: 'Пікачу',
+        hint: 'електрика, покемон, жовтий',
+        imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80',
+        infoUrl: 'https://uk.wikipedia.org/wiki/%D0%9F%D1%96%D0%BA%D0%B0%D1%87%D1%83'
+      }
+    ];
+
+    const state = {
+      players: [],
+      currentScreen: 'screenSetup',
+      currentKnowledgePlayerIndex: 0,
+      revealIndex: 0,
+      revealShown: false,
+      roundNumber: 0,
+      selectedWord: null,
+      spyPlayerId: null,
+      votes: {},
+      roundFinished: false
+    };
+
+    const elements = {
+      heroText: document.getElementById('heroText'),
+      playersCountChip: document.getElementById('playersCountChip'),
+      roundCountChip: document.getElementById('roundCountChip'),
+      playerName: document.getElementById('playerName'),
+      addPlayerButton: document.getElementById('addPlayerButton'),
+      fillDemoButton: document.getElementById('fillDemoButton'),
+      goToKnowledgeButton: document.getElementById('goToKnowledgeButton'),
+      playersList: document.getElementById('playersList'),
+      screenKnowledge: document.getElementById('screenKnowledge'),
+      revealSubtitle: document.getElementById('revealSubtitle'),
+      revealProgress: document.getElementById('revealProgress'),
+      revealCard: document.getElementById('revealCard'),
+      showRoleButton: document.getElementById('showRoleButton'),
+      hideRoleButton: document.getElementById('hideRoleButton'),
+      nextPlayerButton: document.getElementById('nextPlayerButton'),
+      goToVotingButton: document.getElementById('goToVotingButton'),
+      cancelRoundButton: document.getElementById('cancelRoundButton'),
+      voteList: document.getElementById('voteList'),
+      showResultButton: document.getElementById('showResultButton'),
+      backToRevealButton: document.getElementById('backToRevealButton'),
+      votingWordChip: document.getElementById('votingWordChip'),
+      votingHintChip: document.getElementById('votingHintChip'),
+      resultSummary: document.getElementById('resultSummary'),
+      resultWord: document.getElementById('resultWord'),
+      resultHint: document.getElementById('resultHint'),
+      resultList: document.getElementById('resultList'),
+      newRoundButton: document.getElementById('newRoundButton'),
+      toKnowledgeButtonFromResults: document.getElementById('toKnowledgeButtonFromResults'),
+      backToSetupButton: document.getElementById('backToSetupButton')
+    };
+
+    function createPlayer(name) {
+      return {
+        id: crypto.randomUUID(),
+        name,
+        knownWordIds: WORD_LIBRARY.map(word => word.id),
+      };
+    }
+
+    function render() {
+      renderSetup();
+      renderKnowledge();
+      renderReveal();
+      renderVoting();
+      renderResults();
+      updateHero();
+      updateChips();
+      updateButtons();
+    }
+
+    function updateHero() {
+      const map = {
+        screenSetup: 'Додайте гравців, сформуйте склад і переходьте до вибору знайомих персонажів.',
+        screenKnowledge: 'Кожен гравець по черзі відмічає персонажів, яких він добре знає.',
+        screenReveal: 'Передавайте телефон по колу. Кожен гравець відкриває лише свою картку.',
+        screenVoting: 'Обговоріть слово, знайдіть підозрюваного і проголосуйте.',
+        screenResults: 'Перевірте, хто був шпигуном, і запускайте новий раунд.'
+      };
+      elements.heroText.textContent = map[state.currentScreen] || map.screenSetup;
+    }
+
+    function updateChips() {
+      elements.playersCountChip.textContent = `Гравців: ${state.players.length}`;
+      elements.roundCountChip.textContent = `Раундів: ${state.roundNumber}`;
+    }
+
+    function updateButtons() {
+      elements.goToKnowledgeButton.disabled = state.players.length < 3;
+      elements.showResultButton.disabled = !Object.keys(state.votes).length;
+    }
+
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.toggle('is-active', screen.id === screenId);
+      });
+      state.currentScreen = screenId;
+      updateHero();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderSetup() {
+      if (!state.players.length) {
+        elements.playersList.innerHTML = `
+          <div class="muted-box">Поки що немає гравців. Додайте щонайменше трьох учасників.</div>
+        `;
+        return;
+      }
+
+      elements.playersList.innerHTML = state.players.map((player, index) => {
+        const knownCount = player.knownWordIds.length;
+        return `
+          <article class="player-card">
+            <div>
+              <div class="player-card__name">${index + 1}. ${escapeHtml(player.name)}</div>
+              <div class="player-card__meta">Знає персонажів: ${knownCount} з ${WORD_LIBRARY.length}</div>
+            </div>
+            <button class="icon-button" data-remove-player="${player.id}" aria-label="Видалити ${escapeHtml(player.name)}">✕</button>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function renderKnowledge() {
+      const root = elements.screenKnowledge;
+
+      if (!state.players.length) {
+        root.innerHTML = `
+          <div class="card stack">
+            <h2 class="card__title">Знайомі персонажі</h2>
+            <div class="muted-box">Спочатку додайте гравців на стартовому екрані.</div>
+            <button class="button button--secondary" id="returnToSetupFromKnowledgeEmpty">До старту</button>
+          </div>
+        `;
+        root.querySelector('#returnToSetupFromKnowledgeEmpty')?.addEventListener('click', () => switchScreen('screenSetup'));
+        return;
+      }
+
+      root.innerHTML = state.players.map((player, index) => {
+        const knownCount = player.knownWordIds.length;
+        return `
+          <div class="card players-grid">
+            <div class="knowledge-header">
+              <div>
+                <h2 class="card__title">${index + 1}. ${escapeHtml(player.name)}</h2>
+                <p class="card__subtitle">Позначте персонажів, яких цей гравець точно знає.</p>
+              </div>
+              <div class="knowledge-count">${knownCount}/${WORD_LIBRARY.length}</div>
+            </div>
+
+            <div class="row">
+              <button class="button button--secondary" data-select-all="${player.id}">Знає всіх</button>
+              <button class="button button--ghost" data-clear-all="${player.id}">Очистити</button>
+            </div>
+
+            <div class="knowledge-section">
+              <div class="word-list">
+                ${WORD_LIBRARY.map(word => {
+                  const isKnown = player.knownWordIds.includes(word.id);
+                  return `
+                    <article class="library-card">
+                      <div class="word-card__row">
+                        <div>
+                          <h3 class="word-card__name">${escapeHtml(word.text)}</h3>
+                          <div class="library-card__meta">Підказка: ${escapeHtml(word.hint)}</div>
+                          ${word.infoUrl ? `<div class="library-card__meta">URL: ${escapeHtml(word.infoUrl)}</div>` : ''}
+                        </div>
+                        <button class="toggle ${isKnown ? 'is-on' : ''}" data-toggle-word="${player.id}|${word.id}" aria-label="${isKnown ? 'Позначено' : 'Не позначено'}"></button>
+                      </div>
+                    </article>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('') + `
+        <div class="screen-footer">
+          <div class="button-group">
+            <button class="button button--success" id="startGameButton">Почати гру</button>
+            <button class="button button--secondary" id="knowledgeBackButton">Назад</button>
+          </div>
+        </div>
+      `;
+
+      root.querySelector('#knowledgeBackButton')?.addEventListener('click', () => switchScreen('screenSetup'));
+      root.querySelector('#startGameButton')?.addEventListener('click', startRound);
+
+      root.querySelectorAll('[data-toggle-word]').forEach(button => {
+        button.addEventListener('click', () => {
+          const [playerId, wordIdRaw] = button.getAttribute('data-toggle-word').split('|');
+          const wordId = Number(wordIdRaw);
+          const player = state.players.find(x => x.id === playerId);
+          if (!player) return;
+
+          if (player.knownWordIds.includes(wordId)) {
+            player.knownWordIds = player.knownWordIds.filter(id => id !== wordId);
+          } else {
+            player.knownWordIds = [...player.knownWordIds, wordId];
+          }
+          render();
+          switchScreen('screenKnowledge');
+        });
+      });
+
+      root.querySelectorAll('[data-select-all]').forEach(button => {
+        button.addEventListener('click', () => {
+          const player = state.players.find(x => x.id === button.getAttribute('data-select-all'));
+          if (!player) return;
+          player.knownWordIds = WORD_LIBRARY.map(word => word.id);
+          render();
+          switchScreen('screenKnowledge');
+        });
+      });
+
+      root.querySelectorAll('[data-clear-all]').forEach(button => {
+        button.addEventListener('click', () => {
+          const player = state.players.find(x => x.id === button.getAttribute('data-clear-all'));
+          if (!player) return;
+          player.knownWordIds = [];
+          render();
+          switchScreen('screenKnowledge');
+        });
+      });
+    }
+
+    function renderReveal() {
+      if (!state.selectedWord || !state.players.length) {
+        elements.revealSubtitle.textContent = 'Раунд ще не розпочато.';
+        elements.revealCard.innerHTML = `
+          <div class="word-card__eyebrow">Очікування</div>
+          <h3 class="word-card__title">Спочатку запустіть раунд</h3>
+          <div class="word-card__hint">Перейдіть до вибору знайомих персонажів і натисніть «Почати гру».</div>
+        `;
+        return;
+      }
+
+      const currentPlayer = state.players[state.revealIndex];
+      const isLast = state.revealIndex === state.players.length - 1;
+
+      elements.revealSubtitle.textContent = `Хід гравця: ${currentPlayer.name}`;
+      elements.revealProgress.innerHTML = state.players.map((_, index) => {
+        const cls = index < state.revealIndex ? 'is-done' : index === state.revealIndex ? 'is-active' : '';
+        return `<div class="progress__item ${cls}"></div>`;
+      }).join('');
+
+      if (!state.revealShown) {
+        elements.revealCard.innerHTML = `
+          <div class="word-card__eyebrow">Секретна картка</div>
+          <h3 class="word-card__title">${escapeHtml(currentPlayer.name)}</h3>
+          <div class="word-card__hint">Натисни «Показати», подивись свою роль і сховай екран перед передачею іншому гравцеві.</div>
+        `;
+      } else {
+        const isSpy = currentPlayer.id === state.spyPlayerId;
+        elements.revealCard.innerHTML = isSpy
+          ? `
+            <div class="word-card__eyebrow">Твоя роль</div>
+            <div class="word-card__spy">Ти шпіон</div>
+            <div class="word-card__hint">Уважно слухай інших, став уточнювальні питання і спробуй не видати себе.</div>
+          `
+          : `
+            <div class="word-card__eyebrow">Твоє слово</div>
+            <h3 class="word-card__title">${escapeHtml(state.selectedWord.text)}</h3>
+            <div class="word-card__hint">Підказка: ${escapeHtml(state.selectedWord.hint)}</div>
+            ${state.selectedWord.imageUrl ? `
+              <div class="word-card__image-wrap">
+                <img class="word-card__image" src="${escapeAttribute(state.selectedWord.imageUrl)}" alt="${escapeAttribute(state.selectedWord.text)}" />
+              </div>
+            ` : ''}
+            ${state.selectedWord.infoUrl ? `<div class="word-card__url">URL: ${escapeHtml(state.selectedWord.infoUrl)}</div>` : ''}
+          `;
+      }
+
+      elements.showRoleButton.classList.toggle('hidden', state.revealShown);
+      elements.hideRoleButton.classList.toggle('hidden', !state.revealShown);
+      elements.nextPlayerButton.classList.toggle('hidden', !state.revealShown || isLast);
+      elements.goToVotingButton.classList.toggle('hidden', !state.revealShown || !isLast);
+    }
+
+    function renderVoting() {
+      elements.votingWordChip.textContent = state.selectedWord ? `Слово: ${state.selectedWord.text}` : 'Слово не вибрано';
+      elements.votingHintChip.textContent = state.selectedWord ? `Підказка: ${state.selectedWord.hint}` : 'Підказка відсутня';
+
+      if (!state.players.length) {
+        elements.voteList.innerHTML = `<div class="muted-box">Немає гравців для голосування.</div>`;
+        return;
+      }
+
+      elements.voteList.innerHTML = state.players.map(player => {
+        const votes = countVotesForPlayer(player.id);
+        const isSelected = !!state.votes[player.id];
+        return `
+          <article class="vote-card ${isSelected ? 'is-selected' : ''}">
+            <div>
+              <div class="player-card__name">${escapeHtml(player.name)}</div>
+              <div class="vote-card__meta">Голосів зараз: ${votes}</div>
+            </div>
+            <button class="vote-card__button" data-vote-player="${player.id}">${isSelected ? 'Обрано' : 'Голосувати'}</button>
+          </article>
+        `;
+      }).join('');
+
+      elements.voteList.querySelectorAll('[data-vote-player]').forEach(button => {
+        button.addEventListener('click', () => {
+          const playerId = button.getAttribute('data-vote-player');
+          if (state.votes[playerId]) {
+            delete state.votes[playerId];
+          } else {
+            state.votes[playerId] = true;
+          }
+          renderVoting();
+          updateButtons();
+        });
+      });
+    }
+
+    function renderResults() {
+      if (!state.selectedWord) {
+        elements.resultSummary.textContent = 'Раунд ще не завершено.';
+        elements.resultWord.textContent = '—';
+        elements.resultHint.textContent = '—';
+        elements.resultList.innerHTML = `<div class="muted-box">Запустіть гру, щоб побачити результат.</div>`;
+        return;
+      }
+
+      const spy = state.players.find(player => player.id === state.spyPlayerId);
+      const votedSpy = !!state.votes[state.spyPlayerId];
+      const voteCount = countVotesForPlayer(state.spyPlayerId);
+
+      elements.resultSummary.textContent = votedSpy
+        ? `Шпигуна знайшли. Проти ${spy?.name || 'гравця'} проголосували ${voteCount} раз(и).`
+        : `Шпигун не був викритий. ${spy?.name || 'Гравець'} залишився непоміченим.`;
+
+      elements.resultWord.textContent = state.selectedWord.text;
+      elements.resultHint.textContent = state.selectedWord.hint;
+
+      elements.resultList.innerHTML = state.players.map(player => {
+        const isSpy = player.id === state.spyPlayerId;
+        const gotVotes = countVotesForPlayer(player.id);
+        return `
+          <article class="result-card">
+            <div>
+              <div class="player-card__name">${escapeHtml(player.name)}</div>
+              <div class="result-card__meta">Отримав голосів: ${gotVotes}</div>
+            </div>
+            <div class="result-card__pill ${isSpy ? 'is-spy' : 'is-safe'}">${isSpy ? 'Шпіон' : 'Не шпіон'}</div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function addPlayer() {
+      const raw = elements.playerName.value.trim();
+      if (!raw) {
+        elements.playerName.focus();
+        return;
+      }
+
+      if (state.players.some(player => player.name.toLowerCase() === raw.toLowerCase())) {
+        alert('Гравець з таким ім’ям уже існує.');
+        return;
+      }
+
+      state.players.push(createPlayer(raw));
+      elements.playerName.value = '';
+      render();
+      switchScreen('screenSetup');
+      elements.playerName.focus();
+    }
+
+    function removePlayer(playerId) {
+      state.players = state.players.filter(player => player.id !== playerId);
+      render();
+      switchScreen('screenSetup');
+    }
+
+    function fillDemoPlayers() {
+      if (state.players.length) {
+        const proceed = confirm('Замінити поточний список гравців на демо-список?');
+        if (!proceed) return;
+      }
+
+      state.players = ['Анна', 'Ігор', 'Марія', 'Олег'].map(createPlayer);
+      render();
+      switchScreen('screenSetup');
+    }
+
+    function getCommonWords() {
+      if (!state.players.length) return [];
+      const commonIds = WORD_LIBRARY
+        .filter(word => state.players.every(player => player.knownWordIds.includes(word.id)));
+      return commonIds;
+    }
+
+    function startRound() {
+      if (state.players.length < 3) {
+        alert('Для гри потрібно щонайменше 3 гравці.');
+        return;
+      }
+
+      const commonWords = getCommonWords();
+      if (!commonWords.length) {
+        alert('Немає жодного персонажа, якого знають усі гравці. Позначте більше знайомих слів.');
+        return;
+      }
+
+      state.roundNumber += 1;
+      state.selectedWord = pickRandom(commonWords);
+      state.spyPlayerId = pickRandom(state.players).id;
+      state.votes = {};
+      state.revealIndex = 0;
+      state.revealShown = false;
+      state.roundFinished = false;
+
+      render();
+      switchScreen('screenReveal');
+    }
+
+    function cancelRound() {
+      const proceed = confirm('Скасувати поточний раунд?');
+      if (!proceed) return;
+
+      state.selectedWord = null;
+      state.spyPlayerId = null;
+      state.votes = {};
+      state.revealIndex = 0;
+      state.revealShown = false;
+      state.roundFinished = false;
+      render();
+      switchScreen('screenKnowledge');
+    }
+
+    function showRole() {
+      state.revealShown = true;
+      renderReveal();
+    }
+
+    function hideRole() {
+      state.revealShown = false;
+      renderReveal();
+    }
+
+    function nextPlayer() {
+      if (state.revealIndex < state.players.length - 1) {
+        state.revealIndex += 1;
+        state.revealShown = false;
+        renderReveal();
+      }
+    }
+
+    function countVotesForPlayer(playerId) {
+      return state.votes[playerId] ? 1 : 0;
+    }
+
+    function showResults() {
+      if (!Object.keys(state.votes).length) {
+        const proceed = confirm('Ще немає голосів. Показати результат без голосування?');
+        if (!proceed) return;
+      }
+
+      state.roundFinished = true;
+      renderResults();
+      switchScreen('screenResults');
+    }
+
+    function prepareNewRound() {
+      state.selectedWord = null;
+      state.spyPlayerId = null;
+      state.votes = {};
+      state.revealIndex = 0;
+      state.revealShown = false;
+      state.roundFinished = false;
+      render();
+      switchScreen('screenKnowledge');
+      setTimeout(startRound, 60);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value);
+    }
+
+    function pickRandom(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    elements.addPlayerButton.addEventListener('click', addPlayer);
+    elements.playerName.addEventListener('keydown', event => {
+      if (event.key === 'Enter') addPlayer();
+    });
+
+    elements.fillDemoButton.addEventListener('click', fillDemoPlayers);
+    elements.goToKnowledgeButton.addEventListener('click', () => switchScreen('screenKnowledge'));
+
+    elements.playersList.addEventListener('click', event => {
+      const button = event.target.closest('[data-remove-player]');
+      if (!button) return;
+      removePlayer(button.getAttribute('data-remove-player'));
+    });
+
+    elements.showRoleButton.addEventListener('click', showRole);
+    elements.hideRoleButton.addEventListener('click', hideRole);
+    elements.nextPlayerButton.addEventListener('click', nextPlayer);
+    elements.goToVotingButton.addEventListener('click', () => switchScreen('screenVoting'));
+    elements.cancelRoundButton.addEventListener('click', cancelRound);
+
+    elements.backToRevealButton.addEventListener('click', () => switchScreen('screenReveal'));
+    elements.showResultButton.addEventListener('click', showResults);
+
+    elements.newRoundButton.addEventListener('click', prepareNewRound);
+    elements.toKnowledgeButtonFromResults.addEventListener('click', () => switchScreen('screenKnowledge'));
+    elements.backToSetupButton.addEventListener('click', () => switchScreen('screenSetup'));
+
+    render();
+  </script>
+</body>
+</html>
