@@ -29,4 +29,5 @@ if (votingChips) {
   });
 }
 
+loadUsedWords();
 renderAll();

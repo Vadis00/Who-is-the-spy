@@ -67,12 +67,22 @@ function renderKnowledge() {
           <h3 class="card__title" style="font-size:18px;">${playerIndex + 1}. ${escapeHtml(player.name)}</h3>
           <p class="card__subtitle">Позначте категорії, у яких цей гравець добре орієнтується.</p>
         </div>
-        <div class="knowledge-count" data-known-count>${player.knownCategoryIds.length}/${WORD_LIBRARY.length}</div>
+        <div class="knowledge-count" data-known-count>
+          ${(player.knownCategoryIds || []).length}/${WORD_LIBRARY.length}
+        </div>
       </div>
 
       <div class="knowledge-actions">
         <button
           class="button button--secondary"
+          type="button"
+          onclick="toggleKnowledgeVisibility('${player.id}')"
+        >
+          ${player.isKnowledgeOpen ? "Сховати список" : "Показати список"}
+        </button>
+
+        <button
+          class="button button--ghost"
           type="button"
           onclick="setAllCategoriesForPlayer('${player.id}', true)"
         >
@@ -88,31 +98,39 @@ function renderKnowledge() {
         </button>
       </div>
 
-      <div class="knowledge-words-scroll">
-        <div class="knowledge-list">
-          ${WORD_LIBRARY.map((category) => {
-            const checked = player.knownCategoryIds.includes(category.id);
+      ${
+        player.isKnowledgeOpen
+          ? `
+        <div class="knowledge-words-scroll">
+          <div class="knowledge-list">
+            ${WORD_LIBRARY.map((category) => {
+              const checked = (player.knownCategoryIds || []).includes(
+                category.id,
+              );
 
-            return `
-              <article class="knowledge-word">
-                <div>
-                  <h4 class="knowledge-word__title">${escapeHtml(category.category)}</h4>
-                  <div class="knowledge-word__sub">Персонажів у категорії: ${category.words.length}</div>
-                </div>
+              return `
+                <article class="knowledge-word">
+                  <div>
+                    <h4 class="knowledge-word__title">${escapeHtml(category.category)}</h4>
+                    <div class="knowledge-word__sub">Персонажів у категорії: ${category.words.length}</div>
+                  </div>
 
-                <label class="check">
-                  <input
-                    type="checkbox"
-                    ${checked ? "checked" : ""}
-                    onchange="toggleKnownCategory('${player.id}', '${category.id}', this.checked)"
-                  />
-                  <span>Знає</span>
-                </label>
-              </article>
-            `;
-          }).join("")}
+                  <label class="check">
+                    <input
+                      type="checkbox"
+                      ${checked ? "checked" : ""}
+                      onchange="toggleKnownCategory('${player.id}', '${category.id}', this.checked)"
+                    />
+                    <span>Знає</span>
+                  </label>
+                </article>
+              `;
+            }).join("")}
+          </div>
         </div>
-      </div>
+      `
+          : ""
+      }
     </div>
   `,
     )
@@ -136,7 +154,7 @@ function renderReveal() {
   }
 
   const player = state.players[round.revealIndex];
-  const isSpy = player.id === round.spyPlayerId;
+  const isSpy = round.spyPlayerIds.includes(player.id);
   const isLast = round.revealIndex === state.players.length - 1;
 
   els.revealSubtitle.textContent = `Хід гравця: ${player.name}`;
@@ -258,21 +276,32 @@ function renderResults() {
     return;
   }
 
-  const spy = state.players.find((player) => player.id === round.spyPlayerId);
-  const foundSpy = state.selectedSuspectId === round.spyPlayerId;
+const spies = state.players.filter(player => round.spyPlayerIds.includes(player.id));
+const foundSpy = round.spyPlayerIds.includes(state.selectedSuspectId);
 
+
+if (round.spyPlayerIds.length === state.players.length) {
+  els.resultsSummary.textContent =
+    'Це був спеціальний раунд: шпигунами були всі.';
+} else if (round.spyPlayerIds.length === 2) {
   els.resultsSummary.textContent = foundSpy
-    ? `Шпигуна викрили. Це був ${spy ? spy.name : "один з гравців"}.`
-    : `Шпигуна не вгадали. Це був ${spy ? spy.name : "один з гравців"}.`;
+    ? `Було два шпигуни. Ви вгадали одного з них.`
+    : `Було два шпигуни, але ви нікого не вгадали.`;
+} else {
+  const spy = spies[0];
+  els.resultsSummary.textContent = foundSpy
+    ? `Шпигуна викрили. Це був ${spy ? spy.name : 'один з гравців'}.`
+    : `Шпигуна не вгадали. Це був ${spy ? spy.name : 'один з гравців'}.`;
+}
 
   els.resultWord.textContent = round.word.text;
   els.resultHint.textContent = round.word.hint;
-els.resultWord.textContent = round.word.text;
-els.resultHint.textContent = round.category.category;
+  els.resultWord.textContent = round.word.text;
+  els.resultHint.textContent = round.category.category;
 
   els.resultList.innerHTML = state.players
     .map((player) => {
-      const isSpy = player.id === round.spyPlayerId;
+      const isSpy = round.spyPlayerIds.includes(player.id);
       const wasSelected = player.id === state.selectedSuspectId;
 
       return `

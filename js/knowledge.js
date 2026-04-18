@@ -1,5 +1,5 @@
-window.toggleKnownWord = function(playerId, wordId, checked) {
-  const player = state.players.find(p => p.id === playerId);
+window.toggleKnownWord = function (playerId, wordId, checked) {
+  const player = state.players.find((p) => p.id === playerId);
   if (!player) return;
 
   if (checked) {
@@ -7,42 +7,65 @@ window.toggleKnownWord = function(playerId, wordId, checked) {
       player.knownWordIds.push(wordId);
     }
   } else {
-    player.knownWordIds = player.knownWordIds.filter(id => id !== wordId);
+    player.knownWordIds = player.knownWordIds.filter((id) => id !== wordId);
   }
 
   renderPlayers();
 };
 
-window.setAllWordsForPlayer = function(playerId, value) {
-  const player = state.players.find(p => p.id === playerId);
+window.setAllWordsForPlayer = function (playerId, value) {
+  const player = state.players.find((p) => p.id === playerId);
   if (!player) return;
 
-  player.knownWordIds = value ? WORD_LIBRARY.map(word => word.id) : [];
+  player.knownWordIds = value ? WORD_LIBRARY.map((word) => word.id) : [];
   renderKnowledge();
   renderPlayers();
 };
 
 function getCommonCategories() {
-  return WORD_LIBRARY.filter(category =>
-    state.players.every(player => player.knownCategoryIds.includes(category.id))
+  return WORD_LIBRARY.filter((category) =>
+    state.players.every((player) =>
+      player.knownCategoryIds.includes(category.id),
+    ),
   );
 }
 
-function getRoundData() {
+function getAvailableWordsFromCommonCategories() {
   const commonCategories = getCommonCategories();
-  if (!commonCategories.length) return null;
 
-  const selectedCategory = pickRandom(commonCategories);
-  const selectedWord = pickRandom(selectedCategory.words);
+  const result = [];
 
-  return {
-    category: selectedCategory,
-    word: selectedWord
-  };
+  for (const category of commonCategories) {
+    for (const word of category.words) {
+      if (!isWordUsed(word.id)) {
+        result.push({
+          category,
+          word,
+        });
+      }
+    }
+  }
+
+  return result;
 }
 
-window.toggleKnownCategory = function(playerId, categoryId, checked) {
-  const player = state.players.find(p => p.id === playerId);
+function getRoundData() {
+  let available = getAvailableWordsFromCommonCategories();
+
+  if (!available.length) {
+    clearUsedWords();
+    available = getAvailableWordsFromCommonCategories();
+  }
+
+  if (!available.length) {
+    return null;
+  }
+
+  return pickRandom(available);
+}
+
+window.toggleKnownCategory = function (playerId, categoryId, checked) {
+  const player = state.players.find((p) => p.id === playerId);
   if (!player) return;
 
   if (checked) {
@@ -50,7 +73,9 @@ window.toggleKnownCategory = function(playerId, categoryId, checked) {
       player.knownCategoryIds.push(categoryId);
     }
   } else {
-    player.knownCategoryIds = player.knownCategoryIds.filter(id => id !== categoryId);
+    player.knownCategoryIds = player.knownCategoryIds.filter(
+      (id) => id !== categoryId,
+    );
   }
 
   renderPlayers();
@@ -58,17 +83,28 @@ window.toggleKnownCategory = function(playerId, categoryId, checked) {
   const playerCard = document.querySelector(`[data-player-card="${playerId}"]`);
   if (!playerCard) return;
 
-  const countEl = playerCard.querySelector('[data-known-count]');
+  const countEl = playerCard.querySelector("[data-known-count]");
   if (countEl) {
     countEl.textContent = `${player.knownCategoryIds.length}/${WORD_LIBRARY.length}`;
   }
 };
 
-window.setAllCategoriesForPlayer = function(playerId, value) {
+window.setAllCategoriesForPlayer = function (playerId, value) {
+  const player = state.players.find((p) => p.id === playerId);
+  if (!player) return;
+
+  player.knownCategoryIds = value
+    ? WORD_LIBRARY.map((category) => category.id)
+    : [];
+  renderKnowledge();
+  renderPlayers();
+};
+
+
+window.toggleKnowledgeVisibility = function(playerId) {
   const player = state.players.find(p => p.id === playerId);
   if (!player) return;
 
-  player.knownCategoryIds = value ? WORD_LIBRARY.map(category => category.id) : [];
+  player.isKnowledgeOpen = !player.isKnowledgeOpen;
   renderKnowledge();
-  renderPlayers();
 };
