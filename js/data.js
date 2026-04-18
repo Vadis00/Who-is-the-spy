@@ -361,20 +361,6 @@ const WORD_LIBRARY = [
       },
     ],
   },
-
-  {
-    id: "funny_people_memes",
-    category: "Легендарні люди України",
-    words: [
-      {
-        id: 41,
-        text: "",
-        hint: "",
-        imageUrl: "",
-        infoUrl: "",
-      },
-    ],
-  },
   {
     id: "funny_people_memes",
     category: "Легендарні люди України",
