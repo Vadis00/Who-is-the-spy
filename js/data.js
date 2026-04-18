@@ -440,72 +440,266 @@ const WORD_LIBRARY = [
     ],
   },
   {
-  id: "cult_known_characters",
-  category: "Відомі персонажі",
-  words: [
-    {
-      id: 50,
-      text: "Борат",
-      hint: "Казахстан, гумор, журналіст",
-      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPbQ-L0VDXOJPbyXRbEYjvomDu3lI3efrRaQ&s",
-      infoUrl: "",
-    },
-    {
-      id: 51,
-      text: "Веном",
-      hint: "симбіот, чорний, Marvel",
-      imageUrl: "",
-      infoUrl: "https://i.ytimg.com/vi/4UbBeUlqfPc/sddefault.jpg",
-    },
-    {
-      id: 52,
-      text: "Епштейн",
-      hint: "скандал, острів, мільярдер",
-      imageUrl: "https://static.ukrinform.com/photos/2025_07/thumb_files/630_360_1751895545-898.jpg",
-      infoUrl: "",
-    },
-    {
-      id: 53,
-      text: "Осел (Шрек)",
-      hint: "балакучий, друг, Шрек",
-      imageUrl: "https://ukranews.com/upload/media/2024/06/25/667aaf60a2d60-vislyuk_1200x670.jpg.webp",
-      infoUrl: "",
-    },
-    {
-      id: 54,
-      text: "Пабло Ескобар",
-      hint: "Колумбія, картель, гроші",
-      imageUrl: "https://ichef.bbci.co.uk/ace/ws/640/cpsprodpb/2B20/production/_117504011_gettyimages-108556393.jpg.webp",
-      infoUrl: "",
-    },
-    {
-      id: 55,
-      text: "Джеймс Бонд",
-      hint: "007, шпигун, костюм",
-      imageUrl: "https://armyinform.com.ua/wp-content/uploads/2023/03/01_golovna-1.jpg",
-      infoUrl: "",
-    },
-    {
-      id: 56,
-      text: "Джек Горобець",
-      hint: "пірат, ром, корабель",
-      imageUrl: "https://credo.pro/wp-content/uploads/2015/07/4d6f0923024b12216d29585a3fc0f6b6.jpg",
-      infoUrl: "",
-    },
-    {
-      id: 57,
-      text: "Доктор Ватсон",
-      hint: "помічник, Лондон, детектив",
-      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlfjs7FrMW_hUJVqY1Q8lu2Zb3mQy6PZJxng&s",
-      infoUrl: "",
-    },
-    {
-      id: 58,
-      text: "Шерлок Холмс",
-      hint: "детектив, лупа, Лондон",
-      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQ8wa6ixNCZoLMPwe7x0MLU4V-gJxLwAPrrQ&s",
-      infoUrl: "",
-    },
-  ],
-},
+    id: "cult_known_characters",
+    category: "Відомі персонажі",
+    words: [
+      {
+        id: 50,
+        text: "Борат",
+        hint: "Казахстан, гумор, журналіст",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPbQ-L0VDXOJPbyXRbEYjvomDu3lI3efrRaQ&s",
+        infoUrl: "",
+      },
+      {
+        id: 51,
+        text: "Веном",
+        hint: "симбіот, чорний, Marvel",
+        imageUrl: "",
+        infoUrl: "https://i.ytimg.com/vi/4UbBeUlqfPc/sddefault.jpg",
+      },
+      {
+        id: 52,
+        text: "Епштейн",
+        hint: "скандал, острів, мільярдер",
+        imageUrl:
+          "https://static.ukrinform.com/photos/2025_07/thumb_files/630_360_1751895545-898.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 53,
+        text: "Осел (Шрек)",
+        hint: "балакучий, друг, Шрек",
+        imageUrl:
+          "https://ukranews.com/upload/media/2024/06/25/667aaf60a2d60-vislyuk_1200x670.jpg.webp",
+        infoUrl: "",
+      },
+      {
+        id: 54,
+        text: "Пабло Ескобар",
+        hint: "Колумбія, картель, гроші",
+        imageUrl:
+          "https://ichef.bbci.co.uk/ace/ws/640/cpsprodpb/2B20/production/_117504011_gettyimages-108556393.jpg.webp",
+        infoUrl: "",
+      },
+      {
+        id: 55,
+        text: "Джеймс Бонд",
+        hint: "007, шпигун, костюм",
+        imageUrl:
+          "https://armyinform.com.ua/wp-content/uploads/2023/03/01_golovna-1.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 56,
+        text: "Джек Горобець",
+        hint: "пірат, ром, корабель",
+        imageUrl:
+          "https://credo.pro/wp-content/uploads/2015/07/4d6f0923024b12216d29585a3fc0f6b6.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 57,
+        text: "Доктор Ватсон",
+        hint: "помічник, Лондон, детектив",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlfjs7FrMW_hUJVqY1Q8lu2Zb3mQy6PZJxng&s",
+        infoUrl: "",
+      },
+      {
+        id: 58,
+        text: "Шерлок Холмс",
+        hint: "детектив, лупа, Лондон",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQ8wa6ixNCZoLMPwe7x0MLU4V-gJxLwAPrrQ&s",
+        infoUrl: "",
+      },
+    ],
+  },
+  {
+    id: "world_icons",
+    category: "Світові легенди",
+    words: [
+      {
+        id: 59,
+        text: "Майкл Джексон",
+        hint: "поп, танці, moonwalk",
+        imageUrl:
+          "https://rnagayskiy.romanstudio.net.ua/wp-content/uploads/2025/01/931617.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 60,
+        text: "Гендальф",
+        hint: "магія, посох, сірий",
+        imageUrl:
+          "https://upload.wikimedia.org/wikipedia/ru/1/1c/Gandalf_the_White.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 61,
+        text: "Саурон",
+        hint: "око, темрява, перстень",
+        imageUrl: "https://i.redd.it/1ikc7du8vxcd1.jpeg",
+        infoUrl: "",
+      },
+      {
+        id: 62,
+        text: "Росомаха",
+        hint: "кігті, мутант, Marvel",
+        imageUrl:
+          "https://proshokino.com.ua/wp-content/uploads/2022/09/445961.1200xp.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 63,
+        text: "Міккі Маус",
+        hint: "Disney, миша, мультфільм",
+        imageUrl:
+          "https://upload.wikimedia.org/wikipedia/commons/4/4f/Mickey_Mouse_%28poster_version%29.svg",
+        infoUrl: "",
+      },
+      {
+        id: 64,
+        text: "Джеррі",
+        hint: "миша, Том, хитрий",
+        imageUrl:
+          "https://upload.wikimedia.org/wikipedia/ru/2/2f/Jerry_Mouse.png",
+        infoUrl: "",
+      },
+      {
+        id: 65,
+        text: "Доктор Стрендж",
+        hint: "магія, портал, Marvel",
+        imageUrl:
+          "https://upload.wikimedia.org/wikipedia/ru/1/18/Benedict_Cumberbatch_as_Doctor_Strange.jpeg",
+        infoUrl: "",
+      },
+      {
+        id: 66,
+        text: "Джекі Чан",
+        hint: "бійки, трюки, актор",
+        imageUrl:
+          "https://focus.ua/static/storage/thumbs/920x465/a/7c/cujmgo---c810x409x0sx0s--623b1a018a633bf83cecec9c059ee7ca.jpg?v=1691_1",
+        infoUrl: "",
+      },
+      {
+        id: 67,
+        text: "Кріштіану Роналду",
+        hint: "футбол, GOAT, SIUU",
+        imageUrl:
+          "https://minfin.com.ua/img/2025/163697278/6ad30b87001b88a414d8654a847a0bbf.jpeg?1764941582",
+        infoUrl: "",
+      },
+      {
+        id: 68,
+        text: "Марк Цукерберг",
+        hint: "Facebook, технології, Meta",
+        imageUrl:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Mark_Zuckerberg_F8_2019_Keynote_%2832830578717%29_%28cropped%29.jpg/250px-Mark_Zuckerberg_F8_2019_Keynote_%2832830578717%29_%28cropped%29.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 69,
+        text: "Леді Гага",
+        hint: "співачка, шоу, епатаж",
+        imageUrl: "https://kor.ill.in.ua/m/1200x0/4317864.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 70,
+        text: "Андрій Шевченко",
+        hint: "футбол, Україна, нападник",
+        imageUrl:
+          "https://ashevchenko.kiev.ua/assets/images/a-shevchenko-2.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 71,
+        text: "Тарас Шевченко",
+        hint: "поет, Кобзар, Україна",
+        imageUrl:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Taras_Shevchenko_selfportrait_oil_1840.jpg/250px-Taras_Shevchenko_selfportrait_oil_1840.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 72,
+        text: "Леся Українка",
+        hint: "поетеса, письменниця, Україна",
+        imageUrl:
+          "https://library-poems.com/wp-content/uploads/2021/12/630_360_1613729387-345-1.jpg",
+        infoUrl: "",
+      },
+    ],
+  },
+  {
+    id: "great_minds_history",
+    category: "Великі генії та легенди",
+    words: [
+      {
+        id: 73,
+        text: "Ейнштейн",
+        hint: "відносність, фізика, геній",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCQBsAYQIP2OrEE34OUeaUDTmAJVXZlq79UQ&s",
+        infoUrl: "",
+      },
+      {
+        id: 74,
+        text: "Юлій Цезар",
+        hint: "Рим, імператор, сенат",
+        imageUrl:
+          "https://dovidka.biz.ua/wp-content/uploads/2016/04/istorychnyy-portret-yuliya-tsezarya-skorocheno.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 75,
+        text: "Леонардо да Вінчі",
+        hint: "Мона Ліза, винахідник, геній",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0ylIJ0reU01T8OXPI-ReOkn6OsRcmju7Zyw&s",
+        infoUrl: "",
+      },
+      {
+        id: 76,
+        text: "Христофор Колумб",
+        hint: "мореплавець, Америка, кораблі",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5aqGZJHnAwFP1dRQ1i-hDmGgQEuI4WgDy_g&s",
+        infoUrl: "",
+      },
+      {
+        id: 77,
+        text: "Стівен Гокінг",
+        hint: "космос, фізика, візок",
+        imageUrl:
+          "https://imglife.pravda.com.ua/images/doc/1/8/18ac40d-4332460-stephen-hawking-time.jpg",
+        infoUrl: "",
+      },
+      {
+        id: 78,
+        text: "Ісаак Ньютон",
+        hint: "яблуко, гравітація, фізика",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREk-Z2UDk-4JASDBJ8w-AmTxvx6iRhPbwJuw&s",
+        infoUrl: "",
+      },
+      {
+        id: 79,
+        text: "Вінстон Черчилль",
+        hint: "Британія, війна, сигара",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-6EWo_eal-Y9TRA9N_4Cbz9bRTZXb1aZ2Mg&s",
+        infoUrl: "",
+      },
+      {
+        id: 80,
+        text: "Чингісхан",
+        hint: "Монголія, завойовник, імперія",
+        imageUrl:
+          "https://vilne.org.ua/wp-content/uploads/2016/10/chinggiswax_26.jpg",
+        infoUrl: "",
+      },
+    ],
+  },
 ];
